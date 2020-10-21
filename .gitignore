@@ -1,7 +1,13 @@
 .idea
 .vscode
-.o
-.so
+*.o
+*.lo
+*.so
+*.slo
+*.obj
+*.out
+*.app
+*.exe
 __pycache__
 *.pyc
 *.save*
