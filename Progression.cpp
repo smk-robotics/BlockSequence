@@ -43,26 +43,26 @@ int main(int argc, char* argv[]) {
   long long int relicIndex = 0;
   uint8_t digitsCount = 0;
   unsigned long int localProgresionSize = 0;
-  unsigned long int currentMaxIndex = 0;
-  while (givenIndex > currentMaxIndex) {
+  unsigned long int sumProgressionSize = 0;
+  while (givenIndex > sumProgressionSize) {
       ++digitsCount;
       // Calculate relic between given and current max index:
-      relicIndex = givenIndex - currentMaxIndex;
+      relicIndex = givenIndex - sumProgressionSize;
       // Calculate local progression size:
       localProgresionSize = ((2 * (numbersSum + digitsCount) + digitsCount *
                                             (9 * pow(10, digitsCount - 1) - 1)) / 2) * 9 * pow(10, digitsCount - 1);
       // Calculate current max index (inculdes all local progressions):
-      currentMaxIndex += localProgresionSize;
+      sumProgressionSize += localProgresionSize;
       // Calculate sum of all numbers:
       numbersSum += 9 * pow(10, digitsCount - 1) * digitsCount;
-
+      std::cout << std::endl;
       std::cout << "Local progression size - " << localProgresionSize << std::endl;
+      std::cout << "Sum progression size - " << sumProgressionSize << std::endl;
       std::cout << "Relic index - " << relicIndex << std::endl;
-      std::cout << "Sum max index - " << currentMaxIndex << std::endl;
       std::cout << "Digits count - " << std::to_string(digitsCount) << std::endl;
       std::cout << "Numbers sum - " << numbersSum << std::endl;
-      std::cout << std::endl;
   }
+
   localProgresionSize = 0;
   unsigned long int localProgressionIndex = 0;
   unsigned long int previousLocalProgressionSize = 0;
@@ -71,25 +71,22 @@ int main(int argc, char* argv[]) {
     previousLocalProgressionSize = localProgresionSize;
     localProgresionSize += 9 * pow(10, digitsCount - 2) * (digitsCount - 1) + digitsCount * localProgressionIndex;
   }
-
+  relicIndex -= previousLocalProgressionSize;
+  std::cout << std::endl;
   std::cout << "Local progression size - " << localProgresionSize << std::endl;
   std::cout << "Previous local progression size - " << previousLocalProgressionSize << std::endl;
   std::cout << "Local progression index - " << localProgressionIndex << std::endl;
-  std::cout << "Relic index - " << int(relicIndex - previousLocalProgressionSize) << std::endl;
+  std::cout << "Relic index - " << relicIndex << std::endl;
 
-  // unsigned long int localIndex = localMaxIndex + deltaIndex;
-  // std::cout << "Local index is - " << localIndex << std::endl;
-  // std::cout << "Current max index is - " << localMaxIndex << std::endl;
-  // std::cout << "Current numbers count - " << numbersCount << std::endl;
-  // std::string localProgresion;
-  // unsigned long int currentLocalIndex = 1 * pow(10, numbersCount - 1);
-  // while (localProgresion.size() <= localIndex) {
-  //     for (unsigned long int i = 1; i <= currentLocalIndex; ++i) {
-  //         localProgresion += std::to_string(i);
-  //     }
-  //     ++currentLocalIndex;
-  // }
-  // std::cout << localProgresion << std::endl;
-  // std::cout << "On index " << givenIndex << " is number " << /*validationProgression[givenIndex - 1] << */". Found number is " << localProgresion[localIndex - 1] << std::endl;
+  for (uint8_t digit = 1; digit <= digitsCount; ++digit) {
+    localProgresionSize = 9 * pow(10, digit - 1) * digit;
+    if (relicIndex > localProgresionSize) {
+      relicIndex -= localProgresionSize;
+    } else {
+      std::cout << relicIndex / digit << std::endl;
+    }
+  }
+  //std::cout << "On index " << givenIndex << " is number " << validationProgression[givenIndex - 1] << ". Found number is " << localProgresion[localIndex - 1] << std::endl;
+  std::cout << "On index " << givenIndex << " is number " << validationProgression[givenIndex - 1] << std::endl;
   return 0;
 }
