@@ -2,7 +2,6 @@
 .vscode
 .o
 .so
-mimetype
 __pycache__
 *.pyc
 *.save*
