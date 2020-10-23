@@ -5,7 +5,7 @@
 #include <time.h>
 
 // Generate validation progression to check found number.
-std::string generateValidationProgression(const unsigned long long &maxIndex) noexcept {
+std::string generateValidationProgression(const unsigned long long maxIndex) noexcept {
   std::string progressionString;
   unsigned long long currentIndex = 1;
   while (progressionString.size() < maxIndex) {
@@ -21,7 +21,7 @@ std::string generateValidationProgression(const unsigned long long &maxIndex) no
 }
 
 // Calculate digits count in given number.
-uint8_t calculateDigitsCount(const unsigned long long &inputNumber) noexcept {
+uint8_t calculateDigitsCount(const unsigned long long inputNumber) noexcept {
     auto number = inputNumber;
     uint8_t digitsCount = 0;
     while (number != 0) {
@@ -32,7 +32,7 @@ uint8_t calculateDigitsCount(const unsigned long long &inputNumber) noexcept {
 }
 
 // Find numeral in given number.
-uint8_t getNumeralFromNumber(const unsigned long long &originNumber, const uint8_t &index) noexcept {
+uint8_t getNumeralFromNumber(const unsigned long long originNumber, const uint8_t index) noexcept {
     auto number = originNumber;
     uint8_t numeral = 0;
     for (auto i = 0; i <= index; ++i) {
@@ -43,40 +43,44 @@ uint8_t getNumeralFromNumber(const unsigned long long &originNumber, const uint8
 }
 
 // Remove full subprogression indices from given index and calculate max digits count.
-uint8_t removeSubProgressions(unsigned long long *index) noexcept {
+std::pair<uint8_t, unsigned long long> removeSubProgressions(const unsigned long long index) noexcept {
   std::cout << "\33[2K\r" << std::left << std::setw(38) << "Subprogressions removing" << " - [START]"  << std::flush;
-  uint8_t digits = 0;
+  std::pair<uint8_t, unsigned long long> result;
+  result.first = 0;
+  result.second = index;
   unsigned long long numbersSum = 0;
   unsigned long long localProgresionSize = 0;
-  while (*index > localProgresionSize) {
-      ++digits;
+  while (result.second > localProgresionSize) {
+      ++result.first;
       // Calculate relic between given and current max index:
-      *index -= localProgresionSize;
+      result.second -= localProgresionSize;
       // Calculate local progression size:
-      localProgresionSize = ((2 * (numbersSum + digits) + digits * (9 * pow(10, digits - 1) - 1)) / 2) * 9
-                                                                                                * pow(10, digits - 1);
+      localProgresionSize = ((2 * (numbersSum + result.first) + result.first *
+                                             (9 * pow(10, result.first - 1) - 1)) / 2) * 9 * pow(10, result.first - 1);
       // Calculate sum of all numbers:
-      numbersSum += 9 * pow(10, digits - 1) * (digits);
+      numbersSum += 9 * pow(10, result.first - 1) * (result.first);
   }
   std::cout << "\33[2K\r" << std::setw(38) << std::left << "Subprogressions removing" << " - [FINISHED]" << std::flush;
   std::cout << std::endl;
-  std::cout << std::setw(38) << std::left << "Subprogression max digits" << " - [" << int(digits) << "]" << std::endl;
-  std::cout << std::setw(38) << std::left << "Subprogression numeral index" << " - [" << int(*index) << "]"
-            << std::endl;
-  return digits;
+  std::cout << std::setw(38) << std::left << "Subprogression max digits" << " - [" << static_cast<int>(result.first)
+            << "]" << std::endl;
+  std::cout << std::setw(38) << std::left << "Subprogression numeral index"
+            << " - [" << static_cast<int>(result.second) << "]" << std::endl;
+  return result;
 }
 
 // Remove local progression indices from given index.
-void removeLocalProgressions(unsigned long long *index, const uint8_t &digitsCount) noexcept {
+unsigned long long removeLocalProgressions(const unsigned long long index, const uint8_t digitsCount) noexcept {
   std::cout << "\33[2K\r" << std::left << std::setw(38) << "Local progressions removing " << " - [START]" << std::flush;
+  unsigned long long resultIndex = index;
   unsigned long long removedLocalProgresionSize = 0;
   for (auto digit = 1; digit < digitsCount; ++digit) {
     removedLocalProgresionSize += 9 * pow(10, digit - 1) * (digit);
   }
   unsigned long long localProgressionIndex = 1;
   unsigned long long localProgresionSize = 0;
-  while (*index > localProgresionSize) {
-    *index -= localProgresionSize;
+  while (resultIndex > localProgresionSize) {
+    resultIndex -= localProgresionSize;
     localProgresionSize = removedLocalProgresionSize + digitsCount * localProgressionIndex;
     ++localProgressionIndex;
   }
@@ -86,17 +90,18 @@ void removeLocalProgressions(unsigned long long *index, const uint8_t &digitsCou
   std::cout << std::setw(38) << std::left << "Local progression number" << " - [" << localProgressionIndex << "]"
             << std::endl;
   std::cout << std::setw(38) << std::left << "Local progression numeral index" << " - ["
-            << static_cast<long long>(*index) << "]"
+            << static_cast<long long>(resultIndex) << "]"
             << std::endl;
+  return resultIndex;
 }
 
 // Find numeral from progression by given index.
-unsigned long long findNumeral(unsigned long long *index) {
+unsigned long long findNumeral(const unsigned long long index) {
   std::cout << "\33[2K\r" << std::left << std::setw(38) << "Find numeral in local progression" << " - [START]"
             << std::flush;
   unsigned long long number = 0;
   unsigned long long localProgresionSize = 0;
-  while (*index > localProgresionSize) {
+  while (index > localProgresionSize) {
       ++number;
       localProgresionSize += calculateDigitsCount(number);
   }
@@ -104,7 +109,7 @@ unsigned long long findNumeral(unsigned long long *index) {
             << std::flush;
   std::cout << std::endl;
   std::cout << std::setw(38) << std::left << "Find number" << " - [" << number << "]" << std::endl;
-  uint8_t numeralIndex = localProgresionSize - *index;
+  uint8_t numeralIndex = localProgresionSize - index;
   std::cout << std::setw(38) << std::left << "Numeral index in number" << " - ["
             << static_cast<long long>(numeralIndex) << "]" << std::endl;
   return getNumeralFromNumber(number, numeralIndex);
@@ -131,9 +136,11 @@ int main(int argc, char* argv[]) {
     std::cout << std::setw(38) << std::left << "Need validation " << " - [FALSE]" << std::endl;
   }
   clock_t algorithmStartTime = clock();
-  uint8_t digitsCount = removeSubProgressions(&givenIndex);
-  removeLocalProgressions(&givenIndex, digitsCount);
-  uint8_t numeral = findNumeral(&givenIndex);
+  std::pair<uint8_t, unsigned long long> removedSubProgressionIndeces= removeSubProgressions(givenIndex);
+  uint8_t digitsCount = removedSubProgressionIndeces.first;
+  givenIndex = removedSubProgressionIndeces.second;
+  givenIndex = removeLocalProgressions(givenIndex, digitsCount);
+  uint8_t numeral = findNumeral(givenIndex);
   std::cout << std::setw(38) << std::left << "RESULT. Numeral in given index" << " - [" << static_cast<int>(numeral)
             << "] " << std::endl;
   if (needValidation) {
