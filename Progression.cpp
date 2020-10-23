@@ -11,8 +11,8 @@ std::string generateValidationProgression(const unsigned long long maxIndex) noe
   while (progressionString.size() < maxIndex) {
     for (auto i = 1; i <= currentIndex; ++i) {
       progressionString += std::to_string(i);
-      std::cout << "\33[2K\r" << std::setw(38) << std::left << "Generating validation progression" << " - ["
-                << std::to_string(long(progressionString.size() / double(maxIndex) * 100)) << "%]" << std::flush;
+      // std::cout << "\33[2K\r" << std::setw(38) << std::left << "Generating validation progression" << " - ["
+      //           << std::to_string(long(progressionString.size() / double(maxIndex) * 100)) << "%]" << std::flush;
       }
       ++currentIndex;
     }
