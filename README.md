@@ -5,6 +5,6 @@ This code solves block sequence task from codewars - https://www.codewars.com/ka
 For compilation use g++: ```g++ -o Progression.out Progression.cpp```
 
 ### Run
-To run use: ```./Progression.out <Given index>```
+To run use: ```./Progression.out <index>```
 
-To run with validation use: ```./Progression.out <Given index> -v```
+To run with validation use: ```./Progression.out <index> -v```
