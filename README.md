@@ -6,3 +6,4 @@ For compilation use g++: ```g++ -o Progression.out Progression.cpp```
 
 ### Run
 To run use: ```./Progression.out <Given index>```
+To run with validation use: ```./Progression.out <Given index> -v```
