@@ -5,7 +5,7 @@
 #include <time.h>
 
 // Generate validation progression to check found number.
-std::string generateValidationProgression(const unsigned long int &maxIndex) {
+std::string generateValidationProgression(const unsigned long int &maxIndex) noexcept {
   std::cout << std::setw(30) << std::left << "Generating validation progression " << " - [START]" << std::endl;
   std::string progressionString;
   unsigned long int currentIndex = 1;
@@ -26,7 +26,7 @@ std::string generateValidationProgression(const unsigned long int &maxIndex) {
 }
 
 // Calculate digits count in given number.
-uint8_t calculateDigitsCount(const unsigned long int &inputNumber) {
+uint8_t calculateDigitsCount(const unsigned long int &inputNumber) noexcept {
     auto number = inputNumber;
     uint8_t digitsCount = 0;
     while (number != 0) {
@@ -36,72 +36,98 @@ uint8_t calculateDigitsCount(const unsigned long int &inputNumber) {
     return digitsCount;
 }
 
+// Find numeral in given number.
+uint8_t getNumeralFromNumber(const unsigned long int &originNumber, const uint8_t &index) noexcept {
+    auto number = originNumber;
+    uint8_t numeral = 0;
+    for (auto i = 0; i <= index; ++i) {
+      numeral = number % 10;
+      number = number / 10;
+    }
+    return numeral;
+}
+
+// Remove full subprogression indices from given index and calculate max digits count.
+uint8_t removeSubProgressions(unsigned long int *index) noexcept {
+  std::cout << "\33[2K\r" << std::left << std::setw(34) << "Subprogressions removing" << " - [START]"  << std::flush;
+  uint8_t digits = 0;
+  unsigned long int numbersSum = 0;
+  unsigned long int localProgresionSize = 0;
+  while (*index > localProgresionSize) {
+      ++digits;
+      // Calculate relic between given and current max index:
+      *index -= localProgresionSize;
+      // Calculate local progression size:
+      localProgresionSize = ((2 * (numbersSum + digits) + digits * (9 * pow(10, digits - 1) - 1)) / 2) * 9
+                                                                                                * pow(10, digits - 1);
+      // Calculate sum of all numbers:
+      numbersSum += 9 * pow(10, digits - 1) * (digits);
+  }
+  std::cout << "\33[2K\r" << std::setw(34) << std::left << "Subprogressions removing" << " - [FINISHED]" << std::flush;
+  std::cout << std::endl;
+  std::cout << std::setw(34) << std::left << "Subprogression max digits" << " - [" << int(digits) << "]" << std::endl;
+  std::cout << std::setw(34) << std::left << "Subprogression numeral index" << " - [" << int(*index) << "]"
+            << std::endl;
+  return digits;
+}
+
+// Remove local progression indices from given index.
+void removeLocalProgressions(unsigned long int *index, const uint8_t &digitsCount) noexcept {
+  std::cout << "\33[2K\r" << std::left << std::setw(34) << "Local progressions removing " << " - [START]" << std::flush;
+  unsigned long int removedLocalProgresionSize = 0;
+  for (auto digit = 1; digit < digitsCount; ++digit) {
+    removedLocalProgresionSize += 9 * pow(10, digit - 1) * (digit);
+  }
+  unsigned long int localProgressionIndex = 1;
+  unsigned long int localProgresionSize = 0;
+  while (*index > localProgresionSize) {
+    *index -= localProgresionSize;
+    localProgresionSize = removedLocalProgresionSize + digitsCount * localProgressionIndex;
+    ++localProgressionIndex;
+  }
+  std::cout << "\33[2K\r" << std::left << std::setw(34) << "Remove local subprogressions" << " - [FINISHED]"
+            << std::flush;
+  std::cout << std::endl;
+  std::cout << std::setw(34) << std::left << "Local progression number" << " - [" << localProgressionIndex << "]"
+            << std::endl;
+  std::cout << std::setw(34) << std::left << "Local progression numeral index" << " - [" << int(*index) << "]"
+            << std::endl;
+}
+
+unsigned long int findNumeral(unsigned long int *index) {
+  std::cout << "\33[2K\r" << std::left << std::setw(34) << "Find numeral in local progression" << " - [START]"
+            << std::flush;
+  unsigned long int number = 0;
+  unsigned long int localProgresionSize = 0;
+  while (*index > localProgresionSize) {
+      ++number;
+      localProgresionSize += calculateDigitsCount(number);
+  }
+  std::cout << "\33[2K\r" << std::left << std::setw(34) << "Find numeral in local progression" << " - [FINISHED]"
+            << std::flush;
+  std::cout << std::endl;
+  std::cout << std::setw(34) << std::left << "Find number" << " - [" << number << "]" << std::endl;
+  uint8_t numeralIndex = localProgresionSize - *index;
+  std::cout << std::setw(34) << std::left << "Find numeral index" << " - [" << int(numeralIndex) << "]" << std::endl;
+  return getNumeralFromNumber(number, numeralIndex);
+}
+
 int main(int argc, char* argv[]) {
   unsigned long int givenIndex = strtol(argv[1], NULL, 10);
-  std::cout << std::setw(34) << std::left << "Given index in progression" << " - [" << givenIndex << "]" << std::endl;
+  unsigned long int validationIndex = givenIndex;
+  std::cout << std::setw(34) << std::left << "Given numeral index" << " - [" << givenIndex << "]" << std::endl;
   uint8_t indexDigitsCount = calculateDigitsCount(givenIndex);
   std::string validationProgression = generateValidationProgression(pow(10, indexDigitsCount));
-  std::cout << "\33[2K\r" << std::left << std::setw(34) << "Find subprogression number " << " - [START]"  << std::flush;
-  unsigned long int numbersSum = 0;
-  long long int relicIndex = 0;
-  uint8_t digitsCount = 0;
-  unsigned long int localProgresionSize = 0;
-  unsigned long int sumProgressionSize = 0;
-  while (givenIndex > sumProgressionSize) {
-      ++digitsCount;
-      // Calculate relic between given and current max index:
-      relicIndex = givenIndex - sumProgressionSize;
-      // Calculate local progression size:
-      localProgresionSize = ((2 * (numbersSum + digitsCount) + digitsCount *
-                                            (9 * pow(10, digitsCount - 1) - 1)) / 2) * 9 * pow(10, digitsCount - 1);
-      // Calculate current max index (inculdes all local progressions):
-      sumProgressionSize += localProgresionSize;
-      // Calculate sum of all numbers:
-      numbersSum += 9 * pow(10, digitsCount - 1) * digitsCount;
+  uint8_t digitsCount = removeSubProgressions(&givenIndex);
+  removeLocalProgressions(&givenIndex, digitsCount);
+  uint8_t numeral = findNumeral(&givenIndex);
+  std::cout << std::setw(34) << std::left << "Numeral in given index" << " - [" << int(numeral) << "] " << std::endl;
+  std::cout << std::setw(34) << std::left << "Numeral in validation progression" << " - ["
+            << validationProgression[validationIndex - 1] << "]" << std::left << std::endl;
+  if (numeral == (validationProgression[validationIndex - 1] - '0')) {
+    std::cout << std::setw(34) << std::left << "VALIDATION PASS" << " - [" << "TRUE" << "]" << std::left << std::endl;
+  } else {
+    std::cout << std::setw(34) << std::left << "VALIDATION PASS" << " - [" << "FALSE" << "]" << std::left << std::endl;
   }
-  std::cout << "\33[2K\r" << std::setw(34) << std::left << "Find subprogression " << " - [FINISHED]" << std::flush;
-  std::cout << std::endl;
-  std::cout << std::setw(34) << std::left << "Subprogression number digits" << " - [" << int(digitsCount) << "]"
-            << std::endl;
-  localProgresionSize = 0;
-  unsigned long int localProgressionIndex = 0;
-  unsigned long int previouSubProgressionSize = 0;
-  while (localProgresionSize < relicIndex) {
-    ++localProgressionIndex;
-    previouSubProgressionSize = localProgresionSize;
-    localProgresionSize += 9 * pow(10, digitsCount - 2) * (digitsCount - 1) + digitsCount * localProgressionIndex;
-    // std::cout << std::setw(34) << std::left << "LOCAL PROGRESSION SIZE " << " - [" << int(localProgresionSize) << "]"
-    //           << std::endl;
-  }
-  //relicIndex -= previouSubProgressionSize;
-  std::cout << std::setw(34) << std::left << "Subprogression index " << " - ["
-            << int(previouSubProgressionSize + relicIndex) << "]" << std::left << std::endl;
-  std::cout << std::setw(34) << std::left << "Local progression index " << " - [" << int(relicIndex) << "]"
-            << std::left << std::endl;
-  localProgresionSize = 0;
-  unsigned long int number = 0;
-  unsigned long int lastLocalProgressionNumber = 0;
-  for (uint8_t digit = 1; digit <= digitsCount; ++digit) {
-    localProgresionSize += 9 * pow(10, digit - 1) * digit;
-    if (relicIndex > localProgresionSize) {
-      relicIndex -= localProgresionSize;
-      lastLocalProgressionNumber += 9 * pow(10, digit - 1);
-    } else {
-      // std::cout << "Last local progression number - " << lastLocalProgressionNumber << std::endl;
-      // std::cout << "Local progresion size - " << localProgresionSize << std::endl;
-      number = lastLocalProgressionNumber + std::ceil(double(relicIndex) / digit);
-      std::cout << std::setw(34) << "Found number" << " - [" << number << "]" << std::left << std::endl;
-      // std::cout << "Local progression size index - " << relicIndex << std::endl;
-      unsigned long int numeralIndex = relicIndex - floor(relicIndex / digitsCount) * digitsCount;
-      std::cout << std::setw(34) << "Find numeral index " << " - [" << numeralIndex << "]" << std::left << std::endl;
-      std::string numeral = std::to_string(number);
-      std::cout << std::setw(34) << "Find numeral" << " - [" << numeral[numeralIndex] << "]" << std::left << std::endl;
-      break;
-    }
-  }
-  std::cout << std::setw(34) << "Validation numeral" << " - [" << validationProgression[givenIndex - 1]
-            << "]" << std::left << std::endl;
-  // std::cout <<  validationProgression[givenIndex - 3] << validationProgression[givenIndex - 2] << validationProgression[givenIndex - 1]
-  //           << validationProgression[givenIndex] << validationProgression[givenIndex + 1] << validationProgression[givenIndex + 2] << std::endl;
   return 0;
 }
