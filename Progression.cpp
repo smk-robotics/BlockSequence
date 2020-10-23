@@ -90,6 +90,7 @@ void removeLocalProgressions(unsigned long long *index, const uint8_t &digitsCou
             << std::endl;
 }
 
+// Find numeral from progression by given index.
 unsigned long long findNumeral(unsigned long long *index) {
   std::cout << "\33[2K\r" << std::left << std::setw(38) << "Find numeral in local progression" << " - [START]"
             << std::flush;
