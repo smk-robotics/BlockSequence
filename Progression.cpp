@@ -16,7 +16,7 @@ std::string generateValidationProgression(const unsigned long long maxIndex) noe
       }
       ++currentIndex;
     }
-    std::cout << std::endl;
+    // std::cout << std::endl;
     return progressionString;
 }
 
