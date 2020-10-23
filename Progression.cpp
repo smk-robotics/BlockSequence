@@ -152,6 +152,7 @@ int main(int argc, char* argv[]) {
     } else {
       std::cout << std::setw(38) << std::left << "VALIDATION RESULT" << " - [" << "FAILED" << "]" << std::left
                 << std::endl;
+      return 1;
     }
   }
   std::cout << std::setw(38) << std::left << "Time taken for search (seconds)" << " - ["

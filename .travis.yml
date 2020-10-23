@@ -15,4 +15,9 @@ notifications:
     on_failure: always
 script:
   - g++ -o Progression.out Progression.cpp
-  - ./Progression.out 712712 -v
+  - ./Progression.out 5 -v
+  - ./Progression.out 12 -v
+  - ./Progression.out 65 -v
+  - ./Progression.out 235 -v
+  - ./Progression.out 23432 -v
+  - ./Progression.out 1143242 -v
