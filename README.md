@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/smk-robotics/BlockSequence.svg?branch=master)](https://travis-ci.com/github/smk-robotics/BlockSequence)
+
 # BlockSequence
 This code solves block sequence task from codewars - https://www.codewars.com/kata/5e1ab1b9fe268c0033680e5f
 
